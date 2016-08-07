@@ -52,7 +52,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="Release date"
                         android:id="@+id/releaseDateTextView"
                         android:fontFamily="sans-serif-light"
                         android:textSize="30dp"/>
@@ -61,7 +60,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="120min"
                         android:id="@+id/movieLength"
                         android:fontFamily="sans-serif-light"
                         android:textStyle="italic"/>
@@ -69,7 +67,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="9.0/10"
                         android:id="@+id/voteAverageTextView"
                         android:fontFamily="sans-serif-condensed"
                         android:textColor="@color/colorPrimaryDark"
@@ -77,6 +74,7 @@
                     <Button
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
+                        android:id="@+id/markFavoriteButton"
                         android:text="Mark as Favorite"
                         android:textAlignment="center"
                         android:background="@color/colorFavoriteButtonBackground"
@@ -89,7 +87,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Plot synopsis"
                 android:id="@+id/overviewTextView"
                 android:fontFamily="sans-serif-condensed"
                 />
@@ -97,6 +94,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
+                android:id="@+id/trailersDividerLine"
                 android:background="@color/colorLightGrey"
                 android:layout_marginTop="10dp"/>
 

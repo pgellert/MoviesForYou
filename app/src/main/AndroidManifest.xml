@@ -21,11 +21,23 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".DetailsActivity" android:theme="@style/DetailsTheme">
+        <activity
+            android:name=".DetailsActivity"
+            android:theme="@style/DetailsTheme">
+        </activity>
+
+        <provider
+            android:name=".provider.generated.FavoritesProvider"
+            android:authorities="com.gellert.moviesforyou.provider.FavoritesProvider"
+            android:exported="false" />
+
+        <activity
+            android:name=".FavoritesActivity"
+            android:label="@string/title_activity_favorites"
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.gellert.moviesforyou.MainActivity"
-                />
+                android:value="MainActivity" />
         </activity>
     </application>
 

@@ -20,5 +20,7 @@
     <string name="format_vote_average"><xliff:g id="voteAverage">%1$.2f</xliff:g>/10</string>
     <string name="format_movie_length"><xliff:g id="movieLength">%1$1d</xliff:g>min</string>
     <string name="action_share">Share</string>
+    <string name="title_activity_favorites">FavoritesActivity</string>
+    <string name="action_favorites">Favorites</string>
 
 </resources>

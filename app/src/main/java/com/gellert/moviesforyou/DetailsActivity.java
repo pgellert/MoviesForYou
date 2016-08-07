@@ -1,6 +1,8 @@
 package com.gellert.moviesforyou;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ScrollView;
@@ -19,6 +22,8 @@ import android.widget.TextView;
 import com.gellert.moviesforyou.objects.Movie;
 import com.gellert.moviesforyou.objects.Review;
 import com.gellert.moviesforyou.objects.Trailer;
+import com.gellert.moviesforyou.provider.FavoritesColumns;
+import com.gellert.moviesforyou.provider.FavoritesProvider;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -35,6 +40,9 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class DetailsActivity extends AppCompatActivity {
+    private static final String TAG = "DetailsActivity";
+
+
     private Movie movie;
     private ReviewsAdapter reviewsAdapter;
     private TrailersAdapter trailersAdapter;
@@ -50,6 +58,8 @@ public class DetailsActivity extends AppCompatActivity {
     ImageView posterImageView;
     ListView reviewsListView;
     ListView trailersListView;
+
+    Button markFavoriteButton;
 
 
     @Override
@@ -80,6 +90,7 @@ public class DetailsActivity extends AppCompatActivity {
         voteAverageTextView = (TextView) findViewById(R.id.voteAverageTextView);
         overviewTextView = (TextView) findViewById(R.id.overviewTextView);
         posterImageView = (ImageView) findViewById(R.id.posterImageView);
+        markFavoriteButton = (Button) findViewById(R.id.markFavoriteButton);
 
         movieTitle.setText(movie.getOriginalTitle());
         releaseDateTextView.setText(movie.getReleaseDate());
@@ -95,6 +106,29 @@ public class DetailsActivity extends AppCompatActivity {
         trailersListView = (ListView) findViewById(R.id.trailersListView);
         trailersAdapter = new TrailersAdapter(this,R.id.trailersListView);
         trailersListView.setAdapter(trailersAdapter);
+
+        markFavoriteButton.setOnClickListener(
+                new Button.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        ContentValues cv = new ContentValues();
+
+                        cv.put(FavoritesColumns.MOVIE_ID,movie.getID());
+                        cv.put(FavoritesColumns.IMAGE_URL,movie.getImageUrl());
+                        cv.put(FavoritesColumns.PLOT_SYNOPSIS,movie.getPlotSynopsis());
+                        cv.put(FavoritesColumns.RELEASE_DATE,movie.getReleaseDate());
+                        cv.put(FavoritesColumns.TITLE,movie.getOriginalTitle());
+                        cv.put(FavoritesColumns.VOTE_AVERAGE,movie.getVoteAverage());
+
+                        Cursor c = getContentResolver().query(FavoritesProvider.Favorites.CONTENT_URI,
+                                null, FavoritesColumns.TITLE + " = \"" + movie.getOriginalTitle() + "\"", null, null);
+                        if(c.getCount() == 0) {
+                            // not found in database
+                            getContentResolver().insert(FavoritesProvider.Favorites.CONTENT_URI,cv);
+                        }
+                    }
+                }
+        );
     }
 
 
@@ -124,8 +158,21 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        FetchFurtherMovieDetails fetchFurtherMovieDetails = new FetchFurtherMovieDetails();
-        fetchFurtherMovieDetails.execute(movie);
+
+        if(Utility.isOnline(DetailsActivity.this)) {
+            FetchFurtherMovieDetails fetchFurtherMovieDetails = new FetchFurtherMovieDetails();
+            fetchFurtherMovieDetails.execute(movie);
+        } else{
+            movieLengthTextView.setVisibility(TextView.GONE);
+
+            trailersListView.setVisibility(ListView.GONE);
+            findViewById(R.id.trailersLabel).setVisibility(TextView.GONE);
+            findViewById(R.id.trailersDividerLine).setVisibility(View.GONE);
+
+            reviewsListView.setVisibility(ListView.GONE);
+            findViewById(R.id.reviewsLabel).setVisibility(TextView.GONE);
+            findViewById(R.id.reviewsDividerLine).setVisibility(View.GONE);
+        }
     }
 
     public class FetchFurtherMovieDetails extends AsyncTask<Movie,Void,Movie> {
@@ -139,8 +186,6 @@ public class DetailsActivity extends AppCompatActivity {
             movie.setReviews(m.getReviews());
             movie.setTrailers(m.getTrailers());
 
-            //Log.i(TAG,String.valueOf(m.getLength()));
-
             movieLengthTextView.setText(getString(R.string.format_movie_length,movie.getLength()));
 
             for(Trailer t:movie.getTrailers()) {
@@ -149,6 +194,12 @@ public class DetailsActivity extends AppCompatActivity {
 
             for(Review r:movie.getReviews()) {
                 reviewsAdapter.add(r);
+            }
+
+            if(trailersAdapter.isEmpty()) {
+                trailersListView.setVisibility(ListView.GONE);
+                findViewById(R.id.trailersLabel).setVisibility(TextView.GONE);
+                findViewById(R.id.trailersDividerLine).setVisibility(View.GONE);
             }
 
             if(reviewsAdapter.isEmpty()){

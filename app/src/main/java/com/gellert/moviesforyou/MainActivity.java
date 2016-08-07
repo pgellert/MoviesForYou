@@ -1,10 +1,8 @@
 package com.gellert.moviesforyou;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -90,26 +88,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void UpdateImages(){
-        if(isOnline()) {
+        if(Utility.isOnline(MainActivity.this)) {
             FetchMoviesData fetchMoviesData = new FetchMoviesData();
             fetchMoviesData.execute();
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("You need a network connection to use this application. Please turn on mobile network or Wi-Fi in Settings.")
+            builder.setMessage("You need network connection to discover new movies, but you can still check you favorite movies.")
                     .setTitle("Unable to connect")
                     .setCancelable(false)
-                    .setPositiveButton("WIFI",
+                    .setPositiveButton("Favorites",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    Intent i = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                                    Intent i = new Intent(MainActivity.this,FavoritesActivity.class);
                                     startActivity(i);
                                 }
                             }
                     )
-                    .setNegativeButton("Mobile Network",
+                    .setNegativeButton("WIFI",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    Intent i = new Intent(Settings.ACTION_DATA_ROAMING_SETTINGS);
+                                    Intent i = new Intent(Settings.ACTION_WIFI_SETTINGS);
                                     startActivity(i);
                                 }
                             }
@@ -117,14 +115,6 @@ public class MainActivity extends AppCompatActivity {
             AlertDialog alert = builder.create();
             alert.show();
         }
-    }
-
-    public boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        return cm.getActiveNetworkInfo() != null &&
-                cm.getActiveNetworkInfo().isConnected();
     }
 
 
@@ -138,6 +128,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
+            case R.id.action_favorite:
+                startActivity(new Intent(MainActivity.this, FavoritesActivity.class));
+                return true;
             case R.id.action_settings:
                 startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 return true;
